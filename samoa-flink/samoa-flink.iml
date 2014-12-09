@@ -11,6 +11,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="Maven: org.apache.flink:flink-tests:0.7-incubating-SNAPSHOT" level="project" />
     <orderEntry type="module" module-name="samoa-api" />
     <orderEntry type="library" name="Maven: com.yammer.metrics:metrics-core:2.2.0" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.2" level="project" />
@@ -99,12 +100,12 @@
     <orderEntry type="library" name="Maven: org.apache.zookeeper:zookeeper:3.4.5" level="project" />
     <orderEntry type="library" name="Maven: org.apache.hadoop:hadoop-hdfs:2.2.0" level="project" />
     <orderEntry type="library" name="Maven: commons-daemon:commons-daemon:1.0.13" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.flink:flink-streaming-core:0.7-incubating-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.flink:flink-streaming-core:0.8-incubating-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: org.apache.sling:org.apache.sling.commons.json:2.0.6" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.flink:flink-core:0.7-incubating-SNAPSHOT" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.flink:flink-shaded:0.7-incubating-SNAPSHOT" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.flink:flink-compiler:0.7-incubating-SNAPSHOT" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.flink:flink-runtime:0.7-incubating-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.flink:flink-core:0.8-incubating-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.flink:flink-shaded:0.8-incubating-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.flink:flink-compiler:0.8-incubating-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.flink:flink-runtime:0.8-incubating-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-server:8.0.0.M1" level="project" />
     <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-continuation:8.0.0.M1" level="project" />
     <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-http:8.0.0.M1" level="project" />
@@ -117,13 +118,9 @@
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-databind:2.1.1" level="project" />
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-annotations:2.1.1" level="project" />
     <orderEntry type="library" name="Maven: io.netty:netty-all:4.0.21.Final" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.hadoop:hadoop-core:1.2.1" level="project" />
-    <orderEntry type="library" name="Maven: hsqldb:hsqldb:1.8.0.10" level="project" />
-    <orderEntry type="library" name="Maven: oro:oro:2.0.8" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.flink:flink-java:0.7-incubating-SNAPSHOT" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.flink:flink-clients:0.7-incubating-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.flink:flink-java:0.8-incubating-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.flink:flink-clients:0.8-incubating-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: commons-fileupload:commons-fileupload:1.3.1" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.flink:flink-tests:0.7-incubating-SNAPSHOT" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: com.googlecode.jmockit:jmockit:1.5" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: junit:junit:4.10" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.hamcrest:hamcrest-core:1.1" level="project" />
