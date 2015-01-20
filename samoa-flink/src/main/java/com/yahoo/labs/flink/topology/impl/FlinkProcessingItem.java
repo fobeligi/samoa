@@ -22,29 +22,38 @@ package com.yahoo.labs.flink.topology.impl;
 
 import com.google.common.collect.Lists;
 import com.yahoo.labs.flink.Utils;
+import com.yahoo.labs.flink.Utils.*;
 import com.yahoo.labs.samoa.core.ContentEvent;
 import com.yahoo.labs.samoa.core.Processor;
 import com.yahoo.labs.samoa.topology.ProcessingItem;
 import com.yahoo.labs.samoa.topology.Stream;
+
 import org.apache.flink.api.common.functions.Function;
 import org.apache.flink.api.java.tuple.Tuple2;
-import org.apache.flink.streaming.api.collector.OutputSelector;
+
 import org.apache.flink.streaming.api.datastream.DataStream;
+import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.datastream.SplitDataStream;
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.invokable.StreamInvokable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.Serializable;
 
 import java.util.List;
 
 
-public class FlinkProcessingItem extends StreamInvokable<Utils.SamoaType, Utils.SamoaType> implements ProcessingItem, FlinkComponent {
+public class FlinkProcessingItem extends StreamInvokable<SamoaType, SamoaType> implements ProcessingItem, FlinkComponent, Serializable {
 
+	private static final Logger logger = LoggerFactory.getLogger(FlinkProcessingItem.class);
 
 	private final Processor processor;
 	private final SamoaDelegateFunction processFun;
-	private DataStream<Utils.SamoaType> inStream;
-	private SplitDataStream<Utils.SamoaType> outStream;
+	private transient DataStream<SamoaType> inStream;
+	private transient SplitDataStream outStream;
 	private transient List<FlinkStream> outputStreams = Lists.newArrayList();
-	private transient List<Tuple2<FlinkStream, Utils.Partitioning>> inputStreams = Lists.newArrayList();
+	private transient List<Tuple2<FlinkStream, Partitioning>> inputStreams = Lists.newArrayList();
 	private int parallelism;
 
 
@@ -57,10 +66,10 @@ public class FlinkProcessingItem extends StreamInvokable<Utils.SamoaType, Utils.
 	}
 
 	public FlinkProcessingItem(SamoaDelegateFunction fun, Processor proc, int parallelism) {
-		super(fun);
-		this.processFun = fun;
-		this.processor = proc;
-		this.parallelism = parallelism;
+			super(fun);
+			this.processFun = fun;
+			this.processor = proc;
+			this.parallelism = parallelism;
 	}
 
 	public Stream createStream() {
@@ -70,33 +79,37 @@ public class FlinkProcessingItem extends StreamInvokable<Utils.SamoaType, Utils.
 	}
 
 	public void putToStream(ContentEvent data, Stream targetStream) {
-		collector.collect(new Utils.SamoaType(data, targetStream.getStreamId()));
+		collector.collect( SamoaType.of(data, targetStream.getStreamId()));
 	}
 
 	@Override
-	public void initialise() {
-		for (Tuple2<FlinkStream, Utils.Partitioning> inputStream : inputStreams) {
+	public void initialiseStream() {}
+
+	@Override
+	public SingleOutputStreamOperator initialisePI(StreamExecutionEnvironment env) {
+		for (Tuple2<FlinkStream, Partitioning> inputStream : inputStreams) {
 			if (inStream == null) {
 				inStream = Utils.subscribe(inputStream.f0.getOutStream(), inputStream.f1);
-			} else {
+			}
+			else {
 				inStream = inStream.merge(Utils.subscribe(inputStream.f0.getOutStream(), inputStream.f1));
 			}
 		}
-		outStream = inStream.transform("samoaProcessor", inStream.getType(), this)
+		SingleOutputStreamOperator s = inStream.transform("samoaProcessor", inStream.getType(), this).setParallelism(parallelism);
+		/*outStream = inStream.transform("samoaProcessor", inStream.getType(), this)
 				.setParallelism(parallelism).split(new OutputSelector<Utils.SamoaType>() {
+					private static final long serialVersionUID = 1L;
 					@Override
 					public Iterable<String> select(Utils.SamoaType samoaType) {
 						return Lists.newArrayList(samoaType.f2);
 					}
-				});
-		for (FlinkStream stream : outputStreams) {
-			stream.initialise();
-		}
+		});*/
+		return s;
 	}
 
 	@Override
 	public boolean canBeInitialised() {
-		for (Tuple2<FlinkStream, Utils.Partitioning> inputStream : inputStreams) {
+		for (Tuple2<FlinkStream, Partitioning> inputStream : inputStreams) {
 			if (!inputStream.f0.isInitialised()) return false;
 		}
 		return true;
@@ -121,19 +134,19 @@ public class FlinkProcessingItem extends StreamInvokable<Utils.SamoaType, Utils.
 
 	@Override
 	public ProcessingItem connectInputShuffleStream(Stream inputStream) {
-		inputStreams.add(new Tuple2<>((FlinkStream) inputStream, Utils.Partitioning.SHUFFLE));
+		inputStreams.add(new Tuple2<>((FlinkStream) inputStream, Partitioning.SHUFFLE));
 		return this;
 	}
 
 	@Override
 	public ProcessingItem connectInputKeyStream(Stream inputStream) {
-		inputStreams.add(new Tuple2<>((FlinkStream) inputStream, Utils.Partitioning.GROUP));
+		inputStreams.add(new Tuple2<>((FlinkStream) inputStream, Partitioning.GROUP));
 		return this;
 	}
 
 	@Override
 	public ProcessingItem connectInputAllStream(Stream inputStream) {
-		inputStreams.add(new Tuple2<>((FlinkStream) inputStream, Utils.Partitioning.ALL));
+		inputStreams.add(new Tuple2<>((FlinkStream) inputStream, Partitioning.ALL));
 		return this;
 	}
 
@@ -146,13 +159,23 @@ public class FlinkProcessingItem extends StreamInvokable<Utils.SamoaType, Utils.
 		this.parallelism = parallelism;
 	}
 
+	public List<FlinkStream> getOutputStreams() {
+		return outputStreams;
+	}
 
-	@Override
-	public SplitDataStream<Utils.SamoaType> getOutStream() {
+	public void setOutputStreams(List<FlinkStream> outputStreams) {
+		this.outputStreams = outputStreams;
+	}
+
+	public SplitDataStream<SamoaType> getOutStream() {
 		return this.outStream;
 	}
 
-	static class SamoaDelegateFunction implements Function {
+	public void setOutStream(SplitDataStream outStream) {
+		this.outStream = outStream;
+	}
+
+	static class SamoaDelegateFunction implements Function, Serializable{
 		private final Processor proc;
 
 		SamoaDelegateFunction(Processor proc) {

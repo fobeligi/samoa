@@ -21,34 +21,55 @@ package com.yahoo.labs.flink.topology.impl;
  */
 
 
-import com.yahoo.labs.flink.Utils;
+import com.yahoo.labs.flink.Utils.*;
 import com.yahoo.labs.samoa.core.EntranceProcessor;
 import com.yahoo.labs.samoa.topology.AbstractEntranceProcessingItem;
+import org.apache.flink.api.common.typeinfo.TypeInformation;
+import org.apache.flink.api.java.typeutils.TypeExtractor;
 import org.apache.flink.streaming.api.datastream.DataStream;
+import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.function.source.SourceFunction;
 import org.apache.flink.util.Collector;
 
-public class FlinkEntranceProcessingItem extends AbstractEntranceProcessingItem
-		implements FlinkComponent {
+import java.io.Serializable;
 
-	private DataStream outStream;
+public class FlinkEntranceProcessingItem extends AbstractEntranceProcessingItem
+		implements FlinkComponent, Serializable {
+
+	private transient DataStream outStream;
+	private transient TypeInformation<? extends SamoaType> st ;
 
 	public FlinkEntranceProcessingItem(EntranceProcessor proc) {
 		super(proc);
 	}
 
 	@Override
-	public void initialise() {
-		outStream = StreamExecutionEnvironment.getExecutionEnvironment().addSource(new SourceFunction() {
+	public void initialiseStream() {}
+
+	@Override
+	public SingleOutputStreamOperator initialisePI(StreamExecutionEnvironment env) {
+
+		if (getProcessor().hasNext()){
+			SamoaType t = SamoaType.of(getProcessor().nextEvent(), getProcessor().nextEvent().getKey());
+			st = TypeExtractor.getForObject(t); // consider the case that there is no event...how to create an object?
+		}
+		final EntranceProcessor proc = getProcessor();
+
+		outStream = env.addSource(new SourceFunction<SamoaType>() {
+			EntranceProcessor entrProc = proc;
+
 			@Override
-			public void invoke(Collector collector) throws Exception {
-				EntranceProcessor proc = getProcessor();
-				while (proc.hasNext()) {
-					collector.collect(new Utils.SamoaType(proc.nextEvent(), getName()));
+			public void invoke(Collector<SamoaType> collector) throws Exception {
+				while (entrProc.hasNext()) {
+					collector.collect(SamoaType.of(entrProc.nextEvent(), getName()));
 				}
 			}
-		});
+		}, (TypeInformation<SamoaType>) st);
+
+		((FlinkStream)getOutputStream()).initialiseStream();
+
+		return (SingleOutputStreamOperator)outStream;
 	}
 
 	@Override

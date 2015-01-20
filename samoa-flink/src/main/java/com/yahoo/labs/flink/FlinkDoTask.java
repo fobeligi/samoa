@@ -24,7 +24,9 @@ import com.github.javacliparser.ClassOption;
 import com.yahoo.labs.flink.topology.impl.FlinkComponentFactory;
 import com.yahoo.labs.flink.topology.impl.FlinkTopology;
 import com.yahoo.labs.samoa.tasks.Task;
+import org.apache.flink.streaming.api.collector.OutputSelector;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.datastream.DataStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,17 +62,28 @@ public class FlinkDoTask {
 			task = ClassOption.cliStringToObject(cliString.toString(), Task.class, null);
 			logger.info("Sucessfully instantiating {}", task.getClass().getCanonicalName());
 		} catch (Exception e) {
-			logger.error("Fail to initialize the task", e);
-			System.out.println("Fail to initialize the task" + e);
+			logger.error("Fail to initialize the task: ", e);
+			System.out.println("Fail to initialize the task: " + e);
 			return;
 		}
 
 		StreamExecutionEnvironment env = (Utils.isLocal) ? StreamExecutionEnvironment.createLocalEnvironment() :
 				StreamExecutionEnvironment.createRemoteEnvironment(Utils.flinkMaster, Utils.flinkPort, Utils.parallelism, Utils.dependecyJars);
 
-		task.setFactory(new FlinkComponentFactory());
+		logger.info("Creating the factory\n");
+		//System.out.println("Creating the factory\n");
+		task.setFactory(new FlinkComponentFactory(env));
+
+		logger.info("Going to initialize the task\n");
+		//System.out.println("Going to initialize the task\n");
 		task.init();
+
+		logger.info("Going to build the topology\n");
+		//System.out.println("Going to build the topology\n");
 		((FlinkTopology) task.getTopology()).build();
+
+		logger.info("Execute environment\n");
+		//System.out.println("Execute environment\n");
 		env.execute();
 
 	}

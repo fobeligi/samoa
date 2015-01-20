@@ -22,6 +22,8 @@ package com.yahoo.labs.flink.topology.impl;
 
 
 import org.apache.flink.streaming.api.datastream.DataStream;
+import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
 /**
  * Common interface of FlinkEntranceProcessingItem and FlinkProcessingItem
@@ -32,7 +34,9 @@ public interface FlinkComponent {
 	 * An initiation of the node. It should create the right invokables and apply the appropriate
 	 * stream transformations
 	 */
-	public void initialise();
+	public SingleOutputStreamOperator initialisePI(StreamExecutionEnvironment e);
+
+	public void initialiseStream();
 
 	public boolean canBeInitialised();
 

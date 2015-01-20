@@ -45,9 +45,16 @@ public class Utils {
 
 	public enum Partitioning {SHUFFLE, ALL, GROUP}
 
-	public static class SamoaType extends Tuple3<String, ContentEvent, String> {
-		public SamoaType(ContentEvent event, String streamId) {
-			super(event.getKey(), event, streamId);
+	public static class SamoaType extends Tuple3<String, ContentEvent, String>{
+		public SamoaType(){}
+		private SamoaType(String key, ContentEvent event, String streamId) {
+			super(key, event, streamId);
+		}
+
+		public static SamoaType of(ContentEvent event, String streamId)
+		{
+			if (event.getKey() == null) return new SamoaType("default" , event, "default");
+			return new SamoaType(event.getKey(), event, streamId);
 		}
 	}
 

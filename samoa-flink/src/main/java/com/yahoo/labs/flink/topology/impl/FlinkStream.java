@@ -20,11 +20,13 @@ package com.yahoo.labs.flink.topology.impl;
  * #L%
  */
 
-import com.yahoo.labs.flink.Utils;
 import com.yahoo.labs.samoa.core.ContentEvent;
 import com.yahoo.labs.samoa.topology.AbstractStream;
-import org.apache.flink.api.common.functions.MapFunction;
+
 import org.apache.flink.streaming.api.datastream.DataStream;
+import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
+
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
 
 /**
@@ -39,19 +41,23 @@ public class FlinkStream extends AbstractStream implements FlinkComponent {
 	public FlinkStream(FlinkComponent sourcePi) {
 		this.procItem = sourcePi;
 		setStreamId(String.valueOf(outputCounter++));
-		initialise();
 	}
 
 	@Override
-	public void initialise() {
+	public SingleOutputStreamOperator initialisePI(StreamExecutionEnvironment env) {
+		return null;
+	}
 
+	@Override
+	public void initialiseStream() {
 		if (procItem instanceof FlinkProcessingItem) {
-			dataStream = ((FlinkProcessingItem) procItem).getOutStream().select(getStreamId()).map(new MapFunction<Utils.SamoaType, Utils.SamoaType>() {
-				@Override
-				public Utils.SamoaType map(Utils.SamoaType samoaType) throws Exception {
-					return samoaType;
-				}
-			});
+			dataStream = (((FlinkProcessingItem) procItem).getOutStream()).select(getStreamId());
+//			.map(new MapFunction<Utils.SamoaType, Utils.SamoaType>() {
+//				@Override
+//				public Utils.SamoaType map(Utils.SamoaType samoaType) throws Exception {
+//					return samoaType;
+//				}
+//			});;
 		} else
 			dataStream = procItem.getOutStream();
 	}

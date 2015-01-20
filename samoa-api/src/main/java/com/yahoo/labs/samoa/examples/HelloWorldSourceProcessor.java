@@ -70,6 +70,7 @@ public class HelloWorldSourceProcessor implements EntranceProcessor {
     @Override
     public ContentEvent nextEvent() {
         count++;
+        if (rnd==null) rnd = new Random(2);//delete it later
         return new HelloWorldContentEvent(rnd.nextInt(), false);
     }
 }
