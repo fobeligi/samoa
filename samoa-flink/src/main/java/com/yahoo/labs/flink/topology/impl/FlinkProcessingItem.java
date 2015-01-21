@@ -128,8 +128,16 @@ public class FlinkProcessingItem extends StreamInvokable<SamoaType, SamoaType> i
 	@Override
 	public void invoke() throws Exception {
 		while (readNext() != null) {
+			if (!(nextRecord.getField(2).toString().equals("stream-0"))){
+				System.err.println("LOG :: " + nextRecord.getField(2).toString());
+			}
+			System.err.println("Next :: " + nextRecord.getObject().toString());
+			System.err.println("LOG :: " + nextRecord.getObject().f1.getClass().getCanonicalName());
+
+
 			processFun.processEvent(nextRecord.getObject().f1);
 		}
+
 	}
 
 	@Override

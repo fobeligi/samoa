@@ -22,6 +22,7 @@ package com.yahoo.labs.flink.topology.impl;
 
 
 import com.yahoo.labs.flink.Utils.*;
+import com.yahoo.labs.samoa.core.ContentEvent;
 import com.yahoo.labs.samoa.core.EntranceProcessor;
 import com.yahoo.labs.samoa.topology.AbstractEntranceProcessingItem;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
@@ -40,6 +41,9 @@ public class FlinkEntranceProcessingItem extends AbstractEntranceProcessingItem
 	private transient DataStream outStream;
 	private transient TypeInformation<? extends SamoaType> st ;
 
+	private static Boolean isfirstEvent = false;
+	private static ContentEvent firstEvent = null;
+
 	public FlinkEntranceProcessingItem(EntranceProcessor proc) {
 		super(proc);
 	}
@@ -49,20 +53,29 @@ public class FlinkEntranceProcessingItem extends AbstractEntranceProcessingItem
 
 	@Override
 	public SingleOutputStreamOperator initialisePI(StreamExecutionEnvironment env) {
+		final EntranceProcessor proc = getProcessor();
+		final String streamId = getOutputStream().getStreamId();
 
-		if (getProcessor().hasNext()){
-			SamoaType t = SamoaType.of(getProcessor().nextEvent(), getProcessor().nextEvent().getKey());
+		if (proc.hasNext()){
+			isfirstEvent = true;
+			firstEvent = proc.nextEvent();
+
+			SamoaType t = SamoaType.of(firstEvent, streamId);
 			st = TypeExtractor.getForObject(t); // consider the case that there is no event...how to create an object?
 		}
-		final EntranceProcessor proc = getProcessor();
 
 		outStream = env.addSource(new SourceFunction<SamoaType>() {
 			EntranceProcessor entrProc = proc;
-
+			String id = streamId;
 			@Override
 			public void invoke(Collector<SamoaType> collector) throws Exception {
+				if (isfirstEvent) {
+					collector.collect(SamoaType.of(firstEvent, id));
+				}
 				while (entrProc.hasNext()) {
-					collector.collect(SamoaType.of(entrProc.nextEvent(), getName()));
+					//System.out.println("\n---------Just entered the while!!-----------");
+					ContentEvent ce = entrProc.nextEvent();
+					collector.collect(SamoaType.of(ce, id));
 				}
 			}
 		}, (TypeInformation<SamoaType>) st);

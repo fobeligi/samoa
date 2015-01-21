@@ -24,9 +24,7 @@ import com.github.javacliparser.ClassOption;
 import com.yahoo.labs.flink.topology.impl.FlinkComponentFactory;
 import com.yahoo.labs.flink.topology.impl.FlinkTopology;
 import com.yahoo.labs.samoa.tasks.Task;
-import org.apache.flink.streaming.api.collector.OutputSelector;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.streaming.api.datastream.DataStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

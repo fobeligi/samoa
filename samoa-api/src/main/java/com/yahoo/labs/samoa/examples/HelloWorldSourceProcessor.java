@@ -25,6 +25,7 @@ import com.yahoo.labs.samoa.core.EntranceProcessor;
 import com.yahoo.labs.samoa.core.Processor;
 
 import java.util.Random;
+import java.util.UUID;
 
 /**
  * Example {@link EntranceProcessor} that generates a stream of random integers.
@@ -32,7 +33,7 @@ import java.util.Random;
 public class HelloWorldSourceProcessor implements EntranceProcessor {
 
     private static final long serialVersionUID = 6212296305865604747L;
-    private Random rnd;
+    private Random rnd = new Random();
     private final long maxInst;
     private long count;
 
@@ -70,7 +71,7 @@ public class HelloWorldSourceProcessor implements EntranceProcessor {
     @Override
     public ContentEvent nextEvent() {
         count++;
-        if (rnd==null) rnd = new Random(2);//delete it later
         return new HelloWorldContentEvent(rnd.nextInt(), false);
+        //return new HelloWorldContentEvent("FLINK", false);
     }
 }

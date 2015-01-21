@@ -40,7 +40,7 @@ public class FlinkStream extends AbstractStream implements FlinkComponent {
 
 	public FlinkStream(FlinkComponent sourcePi) {
 		this.procItem = sourcePi;
-		setStreamId(String.valueOf(outputCounter++));
+		setStreamId("stream-"+Integer.toString(outputCounter++));
 	}
 
 	@Override

@@ -29,13 +29,19 @@ public class HelloWorldContentEvent implements ContentEvent {
 
     private static final long serialVersionUID = -2406968925730298156L;
     private final boolean isLastEvent;
-    private final int helloWorldData;
+    private final int helloWorldData ;
+    //private final String helloWorldData;
 
     public HelloWorldContentEvent(int helloWorldData, boolean isLastEvent) {
         this.isLastEvent = isLastEvent;
         this.helloWorldData = helloWorldData;
     }
-    
+
+/*    public HelloWorldContentEvent( String helloWorldData, boolean isLastEvent) {
+        this.isLastEvent = isLastEvent;
+        this.helloWorldData = helloWorldData;
+    }*/
+
     /*
      * No-argument constructor for Kryo
      */
@@ -58,9 +64,9 @@ public class HelloWorldContentEvent implements ContentEvent {
         return isLastEvent;
     }
 
-    public int getHelloWorldData() {
-        return helloWorldData;
-    }
+//    public int getHelloWorldData() {
+//        return helloWorldData;
+//    }
 
     @Override
     public String toString() {

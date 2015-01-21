@@ -26,6 +26,7 @@ import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.streaming.api.datastream.DataStream;
 
 import java.util.List;
+import java.util.UUID;
 
 public class Utils {
 
@@ -46,15 +47,20 @@ public class Utils {
 	public enum Partitioning {SHUFFLE, ALL, GROUP}
 
 	public static class SamoaType extends Tuple3<String, ContentEvent, String>{
-		public SamoaType(){}
+		public SamoaType(){
+			super();
+			System.out.println("-----------------Null SamoaType constructor was called---------" );
+		}
 		private SamoaType(String key, ContentEvent event, String streamId) {
 			super(key, event, streamId);
 		}
 
 		public static SamoaType of(ContentEvent event, String streamId)
 		{
-			if (event.getKey() == null) return new SamoaType("default" , event, "default");
-			return new SamoaType(event.getKey(), event, streamId);
+			String key = event.getKey()==null ? "default" : event.getKey();
+			System.out.println("LOG :: ----------------- Stream ID: "+ streamId+"---------");
+			System.out.println("LOG :: ----------------- SamoaType constructor was called---------\n");
+			return new SamoaType(key, event, streamId);
 		}
 	}
 
