@@ -79,7 +79,6 @@ public class FlinkTopology extends AbstractTopology {
 				}
 			}
 		}
-
 		initPIs(ImmutableList.copyOf(Iterables.filter(flinkComponents, new Predicate<FlinkProcessingItem>() {
 			@Override
 			public boolean apply(FlinkProcessingItem flinkComponent) {

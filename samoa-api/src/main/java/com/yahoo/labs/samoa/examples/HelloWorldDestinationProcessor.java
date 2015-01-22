@@ -33,7 +33,6 @@ public class HelloWorldDestinationProcessor implements Processor {
 
     @Override
     public boolean process(ContentEvent event) {
-        System.out.println("------------------------------------------");
         System.out.println(processorId + ": " + event);
         return true;
     }

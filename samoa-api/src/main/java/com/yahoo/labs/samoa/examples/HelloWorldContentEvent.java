@@ -27,26 +27,32 @@ import com.yahoo.labs.samoa.core.ContentEvent;
  */
 public class HelloWorldContentEvent implements ContentEvent {
 
-    private static final long serialVersionUID = -2406968925730298156L;
-    private final boolean isLastEvent;
-    private final int helloWorldData ;
-    //private final String helloWorldData;
+    private static long serialVersionUID = -2406968925730298156L;
+    private boolean isLastEvent;
+    private int helloWorldData ;
 
     public HelloWorldContentEvent(int helloWorldData, boolean isLastEvent) {
         this.isLastEvent = isLastEvent;
         this.helloWorldData = helloWorldData;
     }
 
-/*    public HelloWorldContentEvent( String helloWorldData, boolean isLastEvent) {
-        this.isLastEvent = isLastEvent;
-        this.helloWorldData = helloWorldData;
-    }*/
-
     /*
      * No-argument constructor for Kryo
      */
     public HelloWorldContentEvent() {
     	this(0,false);
+    }
+
+    public void setLastEvent(boolean isLastEvent) {
+        this.isLastEvent = isLastEvent;
+    }
+
+    public int getHelloWorldData() {
+        return helloWorldData;
+    }
+
+    public void setHelloWorldData(int helloWorldData) {
+        this.helloWorldData = helloWorldData;
     }
 
     @Override
@@ -63,10 +69,6 @@ public class HelloWorldContentEvent implements ContentEvent {
     public boolean isLastEvent() {
         return isLastEvent;
     }
-
-//    public int getHelloWorldData() {
-//        return helloWorldData;
-//    }
 
     @Override
     public String toString() {

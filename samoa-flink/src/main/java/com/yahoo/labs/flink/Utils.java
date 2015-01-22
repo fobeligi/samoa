@@ -30,12 +30,11 @@ import java.util.UUID;
 
 public class Utils {
 
-	public static final String LOCAL_MODE = "local";
-	public static final String REMOTE_MODE = "remote";
+	private static final String LOCAL_MODE = "local";
 
 	// FLAGS
-	public static final String MODE_FLAG = "--mode";
-	public static final String DEFAULT_PARALLELISM = "--parallelism";
+	private static final String MODE_FLAG = "-m";
+	private static final String PARALLELISM_FLAG = "-p";
 
 	//config values
 	public static boolean isLocal = true;
@@ -49,7 +48,6 @@ public class Utils {
 	public static class SamoaType extends Tuple3<String, ContentEvent, String>{
 		public SamoaType(){
 			super();
-			System.out.println("-----------------Null SamoaType constructor was called---------" );
 		}
 		private SamoaType(String key, ContentEvent event, String streamId) {
 			super(key, event, streamId);
@@ -58,8 +56,6 @@ public class Utils {
 		public static SamoaType of(ContentEvent event, String streamId)
 		{
 			String key = event.getKey()==null ? "default" : event.getKey();
-			System.out.println("LOG :: ----------------- Stream ID: "+ streamId+"---------");
-			System.out.println("LOG :: ----------------- SamoaType constructor was called---------\n");
 			return new SamoaType(key, event, streamId);
 		}
 	}
@@ -77,7 +73,21 @@ public class Utils {
 	}
 
 	public static void extractFlinkArguments(List<String> tmpargs) {
-		for (int i = tmpargs.size() - 1; i >= 0; i--) {
+		for (int i=1; i< tmpargs.size()-1;i=i+2){
+			String choice = tmpargs.get(i).trim();
+			String value = tmpargs.get(i+1).trim();
+			switch (choice) {
+				case PARALLELISM_FLAG :
+					parallelism = Integer.valueOf(value);
+					break;
+				case MODE_FLAG:
+					 if (!(LOCAL_MODE.equals(value))) isLocal = false;
+					 break;
+				case "-i" :
+					//TODO::refactor to take into consideration all possible arguments.
+			}
+		}
+/*		for (int i = tmpargs.size() - 1; i >= 0; i--) {
 			String arg = tmpargs.get(i).trim();
 			String[] splitted = arg.split("=", 2);
 
@@ -85,9 +95,10 @@ public class Utils {
 				if (MODE_FLAG.equals(splitted[0])) {
 					isLocal = LOCAL_MODE.equals(splitted[1]);
 					tmpargs.remove(i);
+					System.out.println("---------");
 				}
 			}
-		}
+		}*/
 	}
 
 }

@@ -41,7 +41,6 @@ public class FlinkEntranceProcessingItem extends AbstractEntranceProcessingItem
 	private transient DataStream outStream;
 	private transient TypeInformation<? extends SamoaType> st ;
 
-	private static Boolean isfirstEvent = false;
 	private static ContentEvent firstEvent = null;
 
 	public FlinkEntranceProcessingItem(EntranceProcessor proc) {
@@ -57,7 +56,6 @@ public class FlinkEntranceProcessingItem extends AbstractEntranceProcessingItem
 		final String streamId = getOutputStream().getStreamId();
 
 		if (proc.hasNext()){
-			isfirstEvent = true;
 			firstEvent = proc.nextEvent();
 
 			SamoaType t = SamoaType.of(firstEvent, streamId);
@@ -69,11 +67,8 @@ public class FlinkEntranceProcessingItem extends AbstractEntranceProcessingItem
 			String id = streamId;
 			@Override
 			public void invoke(Collector<SamoaType> collector) throws Exception {
-				if (isfirstEvent) {
-					collector.collect(SamoaType.of(firstEvent, id));
-				}
+				collector.collect(SamoaType.of(firstEvent, id));
 				while (entrProc.hasNext()) {
-					//System.out.println("\n---------Just entered the while!!-----------");
 					ContentEvent ce = entrProc.nextEvent();
 					collector.collect(SamoaType.of(ce, id));
 				}
